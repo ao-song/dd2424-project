@@ -7,6 +7,19 @@ from torch.autograd import Variable
 import numpy as np
 from torch import split
 import torch
+from ultils import soft_encoding_ab
+import matplotlib.pyplot as plt
+
+
+def plot(losses):
+    plt.figure()
+    plt.plot(losses)
+    plt.xlabel('Iteration')
+    # plt.ylabel('CrossEntropy Loss')
+    # plt.savefig('ce_loss.png')
+    plt.ylabel('MSE Loss')
+    plt.savefig('mse_loss.png')
+
 
 
 Colorizer = Colorizer()
@@ -16,9 +29,11 @@ Colorizer = Colorizer()
 
 optimizer = optim.Adam(Colorizer.parameters(), lr=0.001)
 criterion = nn.MSELoss()
+# criterion = nn.CrossEntropyLoss()
 
-epochs = 3
+epochs = 80
 # batch_size = 100
+loss_list = []
 
 for epoch in range(epochs):
     running_loss = 0.0
@@ -35,21 +50,25 @@ for epoch in range(epochs):
         l = Variable(l)
         ab = Variable(ab)
 
-        train = Colorizer(l)
+        # target = torch.from_numpy(soft_encoding_ab(ab.detach().numpy()))
+        # print(target.shape)
+
+        output = Colorizer(l)
+        # output = torch.from_numpy(soft_encoding_ab(output.detach().numpy()))
+        # print(output)
+        # print(output.shape)
 
         optimizer.zero_grad()
-        loss = criterion(train, ab)
+        loss = criterion(output, ab)
         loss.backward()
         optimizer.step()
 
-        # if i == 10:
-        #     print('loss is: ' + str(loss))
-        #     break
-
-        running_loss += (loss % 100)
+        running_loss += (loss.item())
+    loss_list.append(running_loss)
     print(f'Running loss is: {running_loss}')
 
-    torch.save(Colorizer.state_dict(), 'models/cifar10_colorizer')
+    torch.save(Colorizer.state_dict(), 'models/cifar10_colorizer'+str(epoch))
 
+plot(loss_list)
 
 

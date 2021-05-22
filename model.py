@@ -3,12 +3,13 @@ from torch.nn import BatchNorm2d, ReLU, Sequential, Conv2d, Softmax, Upsample
 
 
 class Colorizer(nn.Module):
-    def __init__(self):
+    def __init__(self, is_soft_encoding=False):
         super().__init__()
 
         self._l_cent = 50.
         self._l_norm = 100.
         self._ab_norm = 110.
+        self._is_soft_encoding = is_soft_encoding
 
         model1 = [
             # CONV1
@@ -104,8 +105,14 @@ class Colorizer(nn.Module):
         conv7 = self._model7(conv6)
         conv8 = self._model8(conv7)
 
-        out = self._final(self._softmax(conv8))
-        return self.unnorm_ab(self._up(out))
+        if self._is_soft_encoding:
+            return conv8/0.38
+        else:
+            out = self._final(self._softmax(conv8))
+            return self.unnorm_ab(self._up(out))
+
+        # out = self._final(self._softmax(conv8))
+        # return self.unnorm_ab(self._up(out))
 
     def norm_l(self, l):
         return (l - self._l_cent) / self._l_norm

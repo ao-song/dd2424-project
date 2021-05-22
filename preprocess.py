@@ -73,4 +73,3 @@ lab_training_loader = DataLoader(training_dataset, batch_size=100,
 lab_test_loader = DataLoader(test_dataset, batch_size=100,
                              shuffle=True, num_workers=2)
 
-

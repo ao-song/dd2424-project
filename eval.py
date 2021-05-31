@@ -11,11 +11,11 @@ import numpy as np
 
 # get trained model
 mse_model = Colorizer()
-mse_model.load_state_dict((torch.load('models/cifar10_colorizer19')))
+mse_model.load_state_dict((torch.load('models/cifar10_colorizer56')))
 mse_model.eval()
 
 ce_model = Colorizer(is_soft_encoding=True)
-ce_model.load_state_dict((torch.load('models/cifar10_colorizer_soft_encoding19')))
+ce_model.load_state_dict((torch.load('models/cifar10_colorizer_soft_encoding79')))
 ce_model.eval()
 
 
